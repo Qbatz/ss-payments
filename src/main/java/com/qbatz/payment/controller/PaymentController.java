@@ -31,4 +31,10 @@ public class PaymentController {
                                               @RequestHeader Map<String, String> headers) {
         return paymentsService.getPaymentStatus(payload, headers);
     }
+
+    @GetMapping("/{paymentId}")
+    public ResponseEntity<?> getPaymentStatusByPaymentId(@PathVariable("paymentId") String paymentId) {
+        return paymentsService.getPaymentStatusFromZoho(paymentId);
+    }
+
 }

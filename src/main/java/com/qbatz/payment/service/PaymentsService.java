@@ -134,4 +134,8 @@ public class PaymentsService {
 
         return new ResponseEntity<>(paymentSessions, HttpStatus.OK);
     }
+
+    public ResponseEntity<?> getPaymentStatusFromZoho(String paymentId) {
+        return zohoService.getPaymentStatusFromZoho(paymentId, 1);
+    }
 }

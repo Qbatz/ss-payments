@@ -173,4 +173,45 @@ public class ZohoService {
 
 
     }
+
+    public ResponseEntity<?> getPaymentStatusFromZoho(String paymentId, int count) {
+        Credentials credentials = credentialService.getZohoCredentials();
+
+        try {
+            String url = "https://payments.zoho.in/api/v1/payments/" + paymentId;
+            String accountId = "60035196766";
+
+            MultiValueMap<String, String> formParams = new LinkedMultiValueMap<>();
+            formParams.add("account_id", accountId);
+
+            UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url)
+                    .queryParam("account_id", accountId);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("Authorization", "Zoho-oauthtoken "+ credentials.getAuthToken());
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> responseEntity = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
+
+            System.out.println(responseEntity.getStatusCode());
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        }
+        catch (HttpClientErrorException.Unauthorized ex) {
+            count = count + 1;
+            if (count < 3) {
+                Credentials credentials1 = refreshAuthToken(credentials);
+                return getPaymentStatusFromZoho(paymentId, count);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        catch (HttpClientErrorException.BadRequest badRequest) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
