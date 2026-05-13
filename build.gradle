@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.qbatz.payment'
-version = '0.0.1-SNAPSHOT'
+version = ''
 description = 'Payment gateway for qbatz'
 
 java {
@@ -14,6 +14,14 @@ java {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
+bootWar {
+	archiveBaseName = 'ROOT'
+}
+
+bootJar {
+	archiveBaseName = 'console-dev'
+}
+
 
 configurations {
 	compileOnly {
@@ -38,7 +46,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
 	implementation("org.apache.tomcat:tomcat-jasper:11.0.9")
+	implementation("org.springframework.boot:spring-boot-starter-websocket:4.0.2")
 
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
