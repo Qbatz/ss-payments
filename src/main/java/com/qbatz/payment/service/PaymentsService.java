@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
@@ -16,6 +17,8 @@ public class PaymentsService {
 
     @Autowired
     private ZohoService zohoService;
+    @Autowired
+    private OrderHistoryService orderHistoryService;
     @Autowired
     private ZohoPaymentsService zohoPaymentsService;
     @Autowired
@@ -52,7 +55,7 @@ public class PaymentsService {
 
             if (payload.getEventObject().getPayment() != null) {
                 String paymentStatus = payload.getEventObject().getPayment().getStatus();
-                if (paymentStatus != null) {
+                if (StringUtils.hasText(paymentStatus) && paymentStatus.equalsIgnoreCase("success")) {
                     ZohoWebhookRequest.PaymentMethod paymentMethod = payload.getEventObject().getPayment().getPaymentMethod();
                     if (paymentMethod != null) {
                         String type = paymentMethod.getType();
@@ -82,6 +85,7 @@ public class PaymentsService {
                                             eventId,
                                             status,
                                             null);
+                                    orderHistoryService.successfullMobilePayment(paymentResponse);
                                     publisher.sendUpdate(paymentResponse);
                                 }
 
@@ -93,6 +97,7 @@ public class PaymentsService {
                                         null,
                                         status,
                                         null);
+                                orderHistoryService.successfullPayment(paymentResponse);
                                 publisher.sendUpdate(paymentResponse);
                             }
                         }
@@ -113,6 +118,7 @@ public class PaymentsService {
                                     null,
                                     cardStatus);
 
+                            orderHistoryService.successfullPayment(paymentResponse);
                             publisher.sendUpdate(paymentResponse);
                         }
 
