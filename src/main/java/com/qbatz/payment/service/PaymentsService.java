@@ -17,8 +17,6 @@ public class PaymentsService {
     @Autowired
     private ZohoService zohoService;
     @Autowired
-    private ZohoPaymentsService zohoPaymentsService;
-    @Autowired
     private PaymentSessionService paymentSessionService;
 
     private final WebSocketPublisher publisher;
