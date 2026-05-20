@@ -19,8 +19,8 @@ public class PaymentsService {
     private ZohoService zohoService;
     @Autowired
     private OrderHistoryService orderHistoryService;
-    @Autowired
-    private ZohoPaymentsService zohoPaymentsService;
+//    @Autowired
+//    private ZohoPaymentsService zohoPaymentsService;
     @Autowired
     private PaymentSessionService paymentSessionService;
 

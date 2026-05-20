@@ -1,9 +1,0 @@
-package com.qbatz.payment.repositories;
-
-import com.qbatz.payment.dao.ZohoPayment;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public interface ZohoPaymentsRepository extends JpaRepository<ZohoPayment, Long> {
-}
