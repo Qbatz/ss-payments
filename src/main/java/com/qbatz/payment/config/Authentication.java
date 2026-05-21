@@ -28,4 +28,15 @@ public class Authentication {
 
         return null;
     }
+
+    public String getSource() {
+        org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.isAuthenticated()) {
+            Object details = authentication.getDetails();
+            if (details instanceof Claims claims) {
+                return claims.get("source", String.class);
+            }
+        }
+        return null;
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
@@ -17,6 +18,10 @@ public class PaymentsService {
     @Autowired
     private ZohoService zohoService;
     @Autowired
+    private OrderHistoryService orderHistoryService;
+    // @Autowired
+    // private ZohoPaymentsService zohoPaymentsService;
+    @Autowired
     private PaymentSessionService paymentSessionService;
 
     private final WebSocketPublisher publisher;
@@ -24,7 +29,6 @@ public class PaymentsService {
     public PaymentsService(WebSocketPublisher publisher) {
         this.publisher = publisher;
     }
-
 
     public ResponseEntity<?> generatePaymentsLink(String hostelId, GeneratePayments generatePayments) {
         PaymentLinks paymentLink = zohoService.generatePaymentLink(hostelId, generatePayments, 1);
@@ -34,7 +38,8 @@ public class PaymentsService {
 
     public ResponseEntity<?> getPaymentStatus(ZohoWebhookRequest payload, Map<String, String> headers) {
 
-//        zohoPaymentsService.inserIntoDb(" ", "hmacKey", payload.getEventType(), headers.toString());
+        // zohoPaymentsService.inserIntoDb(" ", "hmacKey", payload.getEventType(),
+        // headers.toString());
         String header = headers.get("x-zoho-webhook-signature");
         String[] parts = header.split(",");
         String timestamp = parts[0].split("=")[1];
@@ -42,11 +47,11 @@ public class PaymentsService {
 
         String data = timestamp + "." + payload;
 
-
-
         try {
-            String hmacKey = Utils.generateHmac(data, "ab2bb549067cedf13695cd09a265582e0e2b8c5d0e2e50ac0d01ee7a803c8afea74e0b387f9ae7d8afa6e3ade26e092addd7ff0c7a97edaa4368bdb6eca52b599db49a8f8c8666015cd39314d4191f2b");
-//            zohoPaymentsService.inserIntoDb(receivedSignature, hmacKey, payload, header.toString());
+            String hmacKey = Utils.generateHmac(data,
+                    "ab2bb549067cedf13695cd09a265582e0e2b8c5d0e2e50ac0d01ee7a803c8afea74e0b387f9ae7d8afa6e3ade26e092addd7ff0c7a97edaa4368bdb6eca52b599db49a8f8c8666015cd39314d4191f2b");
+            // zohoPaymentsService.inserIntoDb(receivedSignature, hmacKey, payload,
+            // header.toString());
 
             if (payload.getEventObject().getPayment() != null) {
                 String paymentStatus = payload.getEventObject().getPayment().getStatus();
@@ -63,16 +68,19 @@ public class PaymentsService {
                             channel = upi.getChannel();
                             upiId = upi.getUpiId();
 
-                            PaymentStatus status = new PaymentStatus(payload.getEventObject().getPayment().getPaymentLinkId(),
+                            PaymentStatus status = new PaymentStatus(
+                                    payload.getEventObject().getPayment().getPaymentLinkId(),
                                     payload.getEventObject().getPayment().getPaymentLinkId(),
                                     type,
                                     channel,
                                     upiId);
                             if (payload.getEventObject().getPayment().getPaymentLinkId() == null) {
                                 com.qbatz.payment.dao.PaymentSessions paymentSessions = paymentSessionService
-                                        .updatePaymentSession(payload.getEventObject().getPayment().getPaymentsSessionId());
+                                        .updatePaymentSession(
+                                                payload.getEventObject().getPayment().getPaymentsSessionId());
                                 if (paymentSessions != null) {
-                                    String eventId = paymentSessions.getHostelId() + "-" + payload.getEventObject().getPayment().getPaymentsSessionId();
+                                    String eventId = paymentSessions.getHostelId() + "-"
+                                            + payload.getEventObject().getPayment().getPaymentsSessionId();
 
                                     ZohoPaymentResponse paymentResponse = new ZohoPaymentResponse(type,
                                             "Success",
@@ -80,23 +88,24 @@ public class PaymentsService {
                                             eventId,
                                             status,
                                             null);
+                                    orderHistoryService.successfullMobilePayment(paymentResponse);
                                     publisher.sendUpdate(paymentResponse);
                                 }
 
-                            }
-                            else {
+                            } else {
                                 ZohoPaymentResponse paymentResponse = new ZohoPaymentResponse(type,
                                         "Success",
                                         payload.getEventObject().getPayment().getPaymentLinkId(),
                                         null,
                                         status,
                                         null);
+                                orderHistoryService.successfullPayment(paymentResponse);
                                 publisher.sendUpdate(paymentResponse);
                             }
-                        }
-                        else if (type.equalsIgnoreCase("card")) {
+                        } else if (type.equalsIgnoreCase("card")) {
                             ZohoWebhookRequest.Card card = paymentMethod.getCard();
-                            PaymentStatusCardType cardStatus = new PaymentStatusCardType(payload.getEventObject().getPayment().getPaymentLinkId(),
+                            PaymentStatusCardType cardStatus = new PaymentStatusCardType(
+                                    payload.getEventObject().getPayment().getPaymentLinkId(),
                                     payload.getEventObject().getPayment().getPaymentLinkId(),
                                     type,
                                     card.getFunding(),
@@ -104,18 +113,40 @@ public class PaymentsService {
                                     card.getBrand(),
                                     card.getIssuer(),
                                     card.getCardHolderName());
-                            ZohoPaymentResponse paymentResponse = new ZohoPaymentResponse(type,
-                                    "Success",
-                                    payload.getEventObject().getPayment().getPaymentLinkId(),
-                                    null,
-                                    null,
-                                    cardStatus);
 
-                            publisher.sendUpdate(paymentResponse);
+                            if (payload.getEventObject().getPayment().getPaymentLinkId() == null) {
+                                com.qbatz.payment.dao.PaymentSessions paymentSessions = paymentSessionService
+                                        .updatePaymentSession(
+                                                payload.getEventObject().getPayment().getPaymentsSessionId());
+                                if (paymentSessions != null) {
+                                    String eventId = paymentSessions.getHostelId() + "-"
+                                            + payload.getEventObject().getPayment().getPaymentsSessionId();
+
+                                    ZohoPaymentResponse paymentResponse = new ZohoPaymentResponse(type,
+                                            "Success",
+                                            payload.getEventObject().getPayment().getPaymentLinkId(),
+                                            eventId,
+                                            null,
+                                            cardStatus);
+                                    orderHistoryService.successfullMobilePayment(paymentResponse);
+                                    publisher.sendUpdate(paymentResponse);
+                                }
+                            } else {
+                                ZohoPaymentResponse paymentResponse = new ZohoPaymentResponse(type,
+                                        "Success",
+                                        payload.getEventObject().getPayment().getPaymentLinkId(),
+                                        null,
+                                        null,
+                                        cardStatus);
+                                orderHistoryService.successfullPayment(paymentResponse);
+                                publisher.sendUpdate(paymentResponse);
+                            }
                         }
 
                     }
-//                    PaymentLinks paymentLinks = new PaymentLinks(payload.getEventObject().getPayment().getPaymentLinkId(), payload.getEventObject().getPayment().getPaymentLinkId());
+                    // PaymentLinks paymentLinks = new
+                    // PaymentLinks(payload.getEventObject().getPayment().getPaymentLinkId(),
+                    // payload.getEventObject().getPayment().getPaymentLinkId());
 
                 }
             }
@@ -125,7 +156,6 @@ public class PaymentsService {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
     public ResponseEntity<?> generatePaymentSession(String hostelId, GeneratePayments generatePayments) {
         PaymentSessions paymentSessions = zohoService.generatePaymentSessions(hostelId, generatePayments, 1);
