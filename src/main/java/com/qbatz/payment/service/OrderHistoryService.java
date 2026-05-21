@@ -23,6 +23,8 @@ public class OrderHistoryService {
     private Authentication authentication;
     @Autowired
     private PaymentSessionService paymentSessionService;
+    @Autowired
+    private SubscriptionService subscriptionService;
 
     public void createOrder(String hostelId, PaymentLinks details, Double finalAmount, String planCode,
                             Double discountAmount, Double planPrice, String createdBy) {
@@ -83,6 +85,7 @@ public class OrderHistoryService {
         orderHistory.setOrderStatus(OrderStatus.PAID.name());
         orderHistory.setPaidAt(new Date());
         orderHistoryRepository.save(orderHistory);
+        subscriptionService.subscribe(orderHistory);
     }
 
     public void successfullMobilePayment(Object payload) {
@@ -134,6 +137,7 @@ public class OrderHistoryService {
 
         orderHistory.setOrderStatus(OrderStatus.PAID.name());
         orderHistory.setPaidAt(new Date());
-        orderHistoryRepository.save(orderHistory);
+        OrderHistory savedOrder = orderHistoryRepository.save(orderHistory);
+        subscriptionService.subscribe(savedOrder);
     }
 }
