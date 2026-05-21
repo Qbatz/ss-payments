@@ -55,7 +55,7 @@ public class PaymentsService {
 
             if (payload.getEventObject().getPayment() != null) {
                 String paymentStatus = payload.getEventObject().getPayment().getStatus();
-                if (StringUtils.hasText(paymentStatus) && paymentStatus.equalsIgnoreCase("success")) {
+                if (StringUtils.hasText(paymentStatus) && paymentStatus.equalsIgnoreCase("succeeded")) {
                     ZohoWebhookRequest.PaymentMethod paymentMethod = payload.getEventObject().getPayment().getPaymentMethod();
                     if (paymentMethod != null) {
                         String type = paymentMethod.getType();
@@ -86,6 +86,7 @@ public class PaymentsService {
                                             status,
                                             null);
                                     orderHistoryService.successfullMobilePayment(paymentResponse);
+                                    //subscription
                                     publisher.sendUpdate(paymentResponse);
                                 }
 
@@ -98,6 +99,7 @@ public class PaymentsService {
                                         status,
                                         null);
                                 orderHistoryService.successfullPayment(paymentResponse);
+                                //subscription
                                 publisher.sendUpdate(paymentResponse);
                             }
                         }
@@ -111,15 +113,33 @@ public class PaymentsService {
                                     card.getBrand(),
                                     card.getIssuer(),
                                     card.getCardHolderName());
-                            ZohoPaymentResponse paymentResponse = new ZohoPaymentResponse(type,
-                                    "Success",
-                                    payload.getEventObject().getPayment().getPaymentLinkId(),
-                                    null,
-                                    null,
-                                    cardStatus);
 
-                            orderHistoryService.successfullPayment(paymentResponse);
-                            publisher.sendUpdate(paymentResponse);
+                            if (payload.getEventObject().getPayment().getPaymentLinkId() == null) {
+                                com.qbatz.payment.dao.PaymentSessions paymentSessions = paymentSessionService
+                                        .updatePaymentSession(payload.getEventObject().getPayment().getPaymentsSessionId());
+                                if (paymentSessions != null) {
+                                    String eventId = paymentSessions.getHostelId() + "-" + payload.getEventObject().getPayment().getPaymentsSessionId();
+
+                                    ZohoPaymentResponse paymentResponse = new ZohoPaymentResponse(type,
+                                            "Success",
+                                            payload.getEventObject().getPayment().getPaymentLinkId(),
+                                            eventId,
+                                            null,
+                                            cardStatus);
+                                    orderHistoryService.successfullMobilePayment(paymentResponse);
+                                    publisher.sendUpdate(paymentResponse);
+                                }
+                            }
+                            else {
+                                ZohoPaymentResponse paymentResponse = new ZohoPaymentResponse(type,
+                                        "Success",
+                                        payload.getEventObject().getPayment().getPaymentLinkId(),
+                                        null,
+                                        null,
+                                        cardStatus);
+                                orderHistoryService.successfullPayment(paymentResponse);
+                                publisher.sendUpdate(paymentResponse);
+                            }
                         }
 
                     }

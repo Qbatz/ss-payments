@@ -98,23 +98,23 @@ public class ZohoService {
                         generatePayments.planPrice(),
                         generatePayments.createdBy());
 
-                com.qbatz.payment.dao.PaymentSessions paymentSessions = paymentSessionService.addPaymentSession(
-                        details.paymentLinkId(),
-                        generatePayments.amount(),
-                        hostelId,
-                        generatePayments.discountAmount(),
-                        generatePayments.planPrice(),
-                        generatePayments.planCode());
+//                com.qbatz.payment.dao.PaymentSessions paymentSessions = paymentSessionService.addPaymentSession(
+//                        details.paymentLinkId(),
+//                        generatePayments.amount(),
+//                        hostelId,
+//                        generatePayments.discountAmount(),
+//                        generatePayments.planPrice(),
+//                        generatePayments.planCode());
 
-                String userId = authentication.getName() != null ? authentication.getName() : generatePayments.createdBy();
-                Users users = userRepository.findUserByUserId(userId);
+//                String userId = authentication.getName() != null ? authentication.getName() : generatePayments.createdBy();
+//                Users users = userRepository.findUserByUserId(userId);
 
-                usersService.addUserLog(
-                        hostelId,
-                        paymentSessions.getPaymentSessionId(),
-                        ActivitySource.PAYMENTS,
-                        ActivitySourceType.CREATE_SESSION,
-                        users);
+//                usersService.addUserLog(
+//                        hostelId,
+//                        paymentSessions.getPaymentSessionId(),
+//                        ActivitySource.PAYMENTS,
+//                        ActivitySourceType.CREATE_SESSION,
+//                        users);
 
                 return details;
             }
