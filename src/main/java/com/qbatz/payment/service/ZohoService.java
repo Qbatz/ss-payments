@@ -13,10 +13,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import tools.jackson.databind.JsonNode;
 
+import com.qbatz.payment.enumm.ActivitySource;
+import com.qbatz.payment.enumm.ActivitySourceType;
+import com.qbatz.payment.dao.Users;
+import com.qbatz.payment.repositories.UserRepository;
+import com.qbatz.payment.config.Authentication;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,9 +38,26 @@ public class ZohoService {
     @Autowired
     private CredentialService credentialService;
 
+    @Autowired
+    private OrderHistoryService orderHistoryService;
+
+    @Autowired
+    private PaymentSessionService paymentSessionService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UsersService usersService;
+
+    @Autowired
+    private Authentication authentication;
+
     public ZohoService() {
-        this.restTemplate = new RestTemplate();
-        restTemplate.setInterceptors(Collections.singletonList(new RestTemplateLoggingInterceptor()));
+        RestTemplate template = new RestTemplate(
+                new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
+        template.setInterceptors(Collections.singletonList(new RestTemplateLoggingInterceptor()));
+        this.restTemplate = template;
     }
 
 
@@ -63,9 +87,39 @@ public class ZohoService {
 
             ResponseEntity<JsonNode> responseEntity = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, entity, JsonNode.class);
             if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
-                JsonNode paymentSession = responseEntity.getBody().get("payment_links");
-                return new PaymentLinks(paymentSession.get("url").asString(), paymentSession.get("payment_link_id").asString());
+                JsonNode paymentLinksNode = responseEntity.getBody().get("payment_links");
+                PaymentLinks details = new PaymentLinks(
+                        paymentLinksNode.get("url").asString(),
+                        paymentLinksNode.get("payment_link_id").asString());
 
+                orderHistoryService.createOrder(
+                        hostelId,
+                        details,
+                        generatePayments.amount(),
+                        generatePayments.planCode(),
+                        generatePayments.discountAmount(),
+                        generatePayments.planPrice(),
+                        generatePayments.createdBy());
+
+//                com.qbatz.payment.dao.PaymentSessions paymentSessions = paymentSessionService.addPaymentSession(
+//                        details.paymentLinkId(),
+//                        generatePayments.amount(),
+//                        hostelId,
+//                        generatePayments.discountAmount(),
+//                        generatePayments.planPrice(),
+//                        generatePayments.planCode());
+
+//                String userId = authentication.getName() != null ? authentication.getName() : generatePayments.createdBy();
+//                Users users = userRepository.findUserByUserId(userId);
+
+//                usersService.addUserLog(
+//                        hostelId,
+//                        paymentSessions.getPaymentSessionId(),
+//                        ActivitySource.PAYMENTS,
+//                        ActivitySourceType.CREATE_SESSION,
+//                        users);
+
+                return details;
             }
         }
         catch (HttpClientErrorException.Unauthorized ex) {

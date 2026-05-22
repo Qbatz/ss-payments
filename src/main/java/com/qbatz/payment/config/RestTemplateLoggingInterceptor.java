@@ -41,10 +41,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
         logRequest(request, body);
         ClientHttpResponse response = execution.execute(request, body);
-
-        ClientHttpResponse bufferedResponse = new BufferingClientHttpResponseWrapper(response);
-
-        logResponse(bufferedResponse);
-        return bufferedResponse;
+        logResponse(response);
+        return response;
     }
 }
