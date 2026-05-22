@@ -92,14 +92,14 @@ public class ZohoService {
                         paymentLinksNode.get("url").asString(),
                         paymentLinksNode.get("payment_link_id").asString());
 
-                orderHistoryService.createOrder(
-                        hostelId,
-                        details,
-                        generatePayments.amount(),
-                        generatePayments.planCode(),
-                        generatePayments.discountAmount(),
-                        generatePayments.planPrice(),
-                        generatePayments.createdBy());
+//                orderHistoryService.createOrder(
+//                        hostelId,
+//                        details,
+//                        generatePayments.amount(),
+//                        generatePayments.planCode(),
+//                        generatePayments.discountAmount(),
+//                        generatePayments.planPrice(),
+//                        generatePayments.createdBy());
 
 //                com.qbatz.payment.dao.PaymentSessions paymentSessions = paymentSessionService.addPaymentSession(
 //                        details.paymentLinkId(),
