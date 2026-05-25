@@ -6,6 +6,7 @@ public record ZohoPaymentResponse(String type,
                                   String status,
                                   String linkId,
                                   String paymentSessionId,
+                                  String paymentId,
                                   PaymentStatus upiStatus,
                                   PaymentStatusCardType cardType) {
 }
