@@ -21,11 +21,11 @@ public class QbatzPaymentApplication {
 //	CommandLineRunner addCredentials(CredentialsRepository credentialRepository) {
 //		return args -> {
 //			Credentials credentials = new Credentials();
-//			credentials.setAuthToken("1005.8a54670206ae52f86c3a70af213657a1.df99b2ffa182aceeb0e2ed4c4c0b91c9");
+//			credentials.setAuthToken("1005.21bbcece6df82ea2ea80330ac3e6f387.5990b1633bbbd772c944c7591ab07b0e");
 //			credentials.setService("zoho");
 //			credentials.setSecretValue("e2e997f13e582a1a1ab210d5cc85d208a68e1165f1");
 //			credentials.setClientId("1005.1LJXPZR2TPI4I24NBVW1HVY6QYEV3B");
-//			credentials.setRefreshToken("1005.7178154c7ef49430f3148ae84d6da8fb.c9388be06a4120fdadee516e93e01d0e");
+//			credentials.setRefreshToken("1005.077ddf1712e28a1036baab7a093dca41.961839ea1e539d9bec2eb3809ca4a0ff");
 //			credentialRepository.save(credentials);
 //		};
 //	}
