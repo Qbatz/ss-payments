@@ -7,6 +7,7 @@ import com.qbatz.payment.responses.payments.PaymentLinks;
 import com.qbatz.payment.dto.PaymentSessions;
 import com.qbatz.payment.responses.zoho.AuthTokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -30,6 +31,8 @@ import java.util.Map;
 @Service
 public class ZohoService {
 
+    @Value("${ZOHO_PAYMENTS_BASE_URL}")
+    private String ZOHO_PAYMENTS_BASE_URL;
     private final RestTemplate restTemplate;
 
     @Autowired
@@ -63,7 +66,7 @@ public class ZohoService {
         try {
 
             String accountId = "60035196766";
-            String url = "https://payments.zoho.in/api/v1/paymentlinks";
+            String url = ZOHO_PAYMENTS_BASE_URL + "/api/v1/paymentlinks";
 
             MultiValueMap<String, String> formParams = new LinkedMultiValueMap<>();
             formParams.add("account_id", accountId);
@@ -89,14 +92,14 @@ public class ZohoService {
                         paymentLinksNode.get("url").asString(),
                         paymentLinksNode.get("payment_link_id").asString());
 
-                orderHistoryService.createOrder(
-                        hostelId,
-                        details,
-                        generatePayments.amount(),
-                        generatePayments.planCode(),
-                        generatePayments.discountAmount(),
-                        generatePayments.planPrice(),
-                        generatePayments.createdBy());
+//                orderHistoryService.createOrder(
+//                        hostelId,
+//                        details,
+//                        generatePayments.amount(),
+//                        generatePayments.planCode(),
+//                        generatePayments.discountAmount(),
+//                        generatePayments.planPrice(),
+//                        generatePayments.createdBy());
 
 //                com.qbatz.payment.dao.PaymentSessions paymentSessions = paymentSessionService.addPaymentSession(
 //                        details.paymentLinkId(),
@@ -182,7 +185,7 @@ public class ZohoService {
         Credentials credentials = credentialService.getZohoCredentials();
         try {
             String accountId = "60035196766";
-            String url = "https://payments.zoho.in/api/v1/paymentsessions";
+            String url = ZOHO_PAYMENTS_BASE_URL + "/api/v1/paymentsessions";
 
             MultiValueMap<String, String> formParams = new LinkedMultiValueMap<>();
             formParams.add("account_id", accountId);
@@ -232,7 +235,7 @@ public class ZohoService {
         Credentials credentials = credentialService.getZohoCredentials();
 
         try {
-            String url = "https://payments.zoho.in/api/v1/payments/" + paymentId;
+            String url = ZOHO_PAYMENTS_BASE_URL + "/api/v1/payments/" + paymentId;
             String accountId = "60035196766";
 
             MultiValueMap<String, String> formParams = new LinkedMultiValueMap<>();
