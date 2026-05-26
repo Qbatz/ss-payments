@@ -62,6 +62,7 @@ public class OrderHistoryService {
             return;
         }
 
+        orderHistory.setPaymentId(paymentLinks.paymentId());
         orderHistory.setPaymentType(paymentLinks.type());
         if (paymentLinks.type() != null && paymentLinks.type().equalsIgnoreCase("UPI")) {
             PaymentStatus status = paymentLinks.upiStatus();
@@ -114,6 +115,7 @@ public class OrderHistoryService {
         orderHistory.setCreatedAt(new Date());
         orderHistory.setCreatedBy(paymentSessions.getCreatedBy());
         orderHistory.setActive(true);
+        orderHistory.setPaymentId(paymentLinks.paymentId());
 
         orderHistory.setPaymentType(paymentLinks.type());
         if (paymentLinks.type() != null && paymentLinks.type().equalsIgnoreCase("UPI")) {

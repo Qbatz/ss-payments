@@ -86,6 +86,7 @@ public class PaymentsService {
                                             "Success",
                                             payload.getEventObject().getPayment().getPaymentLinkId(),
                                             eventId,
+                                            payload.getEventObject().getPayment().getPaymentId(),
                                             status,
                                             null);
                                     orderHistoryService.successfullMobilePayment(paymentResponse);
@@ -97,6 +98,7 @@ public class PaymentsService {
                                         "Success",
                                         payload.getEventObject().getPayment().getPaymentLinkId(),
                                         null,
+                                        payload.getEventObject().getPayment().getPaymentId(),
                                         status,
                                         null);
                                 orderHistoryService.successfullPayment(paymentResponse);
@@ -126,6 +128,7 @@ public class PaymentsService {
                                             "Success",
                                             payload.getEventObject().getPayment().getPaymentLinkId(),
                                             eventId,
+                                            payload.getEventObject().getPayment().getPaymentId(),
                                             null,
                                             cardStatus);
                                     orderHistoryService.successfullMobilePayment(paymentResponse);
@@ -136,6 +139,7 @@ public class PaymentsService {
                                         "Success",
                                         payload.getEventObject().getPayment().getPaymentLinkId(),
                                         null,
+                                        payload.getEventObject().getPayment().getPaymentId(),
                                         null,
                                         cardStatus);
                                 orderHistoryService.successfullPayment(paymentResponse);
