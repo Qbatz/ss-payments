@@ -55,8 +55,8 @@ public class SubscriptionService {
         subscription.setPlanStartsAt(startDate);
         subscription.setPaidAmount(oh.getTotalAmount());
         subscription.setPlanAmount(oh.getPlanAmount());
-        subscription.setDiscount(oh.getDiscountAmount());
-        subscription.setDiscountAmount(discountPercentage);
+        subscription.setDiscount(discountPercentage);
+        subscription.setDiscountAmount(oh.getDiscountAmount());
         subscription.setCreatedBy(oh.getCreatedBy());
         subscription.setCreatedByUserType(UserType.OWNER.name());
         subscription.setCreatedAt(new Date());
