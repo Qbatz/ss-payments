@@ -17,7 +17,8 @@ public class SubscriptionService {
 
     @Autowired
     private SubscriptionRepository subscriptionRepository;
-
+    @Autowired
+    private HostelService hostelService;
     @Autowired
     private PlansRepository plansRepository;
 
@@ -30,14 +31,17 @@ public class SubscriptionService {
 
         Subscription runningSubscription = subscriptionRepository.findLatestSubscription(oh.getHostelId());
         Date startDate;
+        boolean shouldActivateImmediately = false;
 
         if (runningSubscription != null && runningSubscription.getPlanEndsAt() != null) {
             startDate = Utils.addDaysToDate(runningSubscription.getPlanEndsAt(), 1);
             if (Utils.compareWithTwoDates(runningSubscription.getPlanEndsAt(), new Date()) < 0) {
                 startDate = new Date();
+                shouldActivateImmediately = true;
             }
         } else {
             startDate = new Date();
+            shouldActivateImmediately = true;
         }
 
         Date endDate = Utils.addDaysToDate(startDate, plan.getDuration().intValue());
@@ -65,6 +69,10 @@ public class SubscriptionService {
         subscription.setActivatedAt(startDate);
         subscription.setIsActive(true);
 
-        subscriptionRepository.save(subscription);
+        Subscription sub = subscriptionRepository.save(subscription);
+        if (shouldActivateImmediately) {
+            hostelService.activateSubscription(plan, startDate, oh.getHostelId(), endDate, oh.getTotalAmount());
+        }
+
     }
 }

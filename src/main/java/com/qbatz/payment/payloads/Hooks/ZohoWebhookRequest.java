@@ -37,8 +37,13 @@ public class ZohoWebhookRequest {
         private String fraudAlert;
         @JsonProperty("payment_link_id")
         private String paymentLinkId;
+        @JsonProperty("net_tax_amount")
+        private String netTaxAmount;
         @JsonProperty("transaction_reference_number")
         private String transactionReferenceNumber;
+        @JsonProperty("fee_bearer_formatted")
+        private String feeBearerGormatted;
+
         @JsonProperty("description")
         private String description;
         @JsonProperty("statement_descriptor")
@@ -59,6 +64,7 @@ public class ZohoWebhookRequest {
         private String failureCode;
         private String transactionTypeFormatted;
         private String defaultCurrencyAmount;
+
         private String transactionType;
         private String referenceNumber;
         private String paymentType;
@@ -110,4 +116,5 @@ public class ZohoWebhookRequest {
         @JsonProperty("issuer")
         private String issuer;
     }
+    
 }

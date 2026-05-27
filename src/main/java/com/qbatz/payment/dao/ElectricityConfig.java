@@ -1,0 +1,34 @@
+package com.qbatz.payment.dao;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.Date;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ElectricityConfig {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private boolean shouldIncludeInRent;
+    //From EBReadingType enum
+    private String typeOfReading;
+    private Date lastUpdate;
+    private String updatedBy;
+    private Double charge;
+    private Double flatCharge;
+    private boolean isUpdated;
+    private Integer billDate;
+
+
+    @OneToOne()
+    @JoinColumn(name = "hostel_id", referencedColumnName = "hostelId")
+    private HostelV1 hostel;
+}
