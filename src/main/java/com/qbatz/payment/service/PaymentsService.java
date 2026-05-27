@@ -50,8 +50,6 @@ public class PaymentsService {
         try {
             String hmacKey = Utils.generateHmac(data,
                     "ab2bb549067cedf13695cd09a265582e0e2b8c5d0e2e50ac0d01ee7a803c8afea74e0b387f9ae7d8afa6e3ade26e092addd7ff0c7a97edaa4368bdb6eca52b599db49a8f8c8666015cd39314d4191f2b");
-            // zohoPaymentsService.inserIntoDb(receivedSignature, hmacKey, payload,
-            // header.toString());
 
             if (payload.getEventObject().getPayment() != null) {
                 String paymentStatus = payload.getEventObject().getPayment().getStatus();
