@@ -8,5 +8,6 @@ public record ZohoPaymentResponse(String type,
                                   String paymentSessionId,
                                   String paymentId,
                                   PaymentStatus upiStatus,
-                                  PaymentStatusCardType cardType) {
+                                  PaymentStatusCardType cardType,
+                                  PaymentStatusNetBanking netBankingStatus) {
 }

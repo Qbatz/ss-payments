@@ -89,6 +89,8 @@ public class ZohoWebhookRequest {
         private Upi upi;
         @JsonProperty("card")
         private Card card;
+        @JsonProperty("net_banking")
+        private NetBanking netBanking;
     }
 
     @Data
@@ -115,6 +117,14 @@ public class ZohoWebhookRequest {
         private String brand;
         @JsonProperty("issuer")
         private String issuer;
+    }
+
+    @Data
+    public static class NetBanking {
+        @JsonProperty("channel")
+        private String channel;
+        @JsonProperty("bank_name")
+        private String bankName;
     }
     
 }

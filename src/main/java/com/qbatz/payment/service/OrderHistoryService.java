@@ -6,10 +6,7 @@ import com.qbatz.payment.dao.PaymentSessions;
 import com.qbatz.payment.enumm.OrderStatus;
 import com.qbatz.payment.enumm.UserType;
 import com.qbatz.payment.repositories.OrderHistoryRepository;
-import com.qbatz.payment.responses.payments.PaymentLinks;
-import com.qbatz.payment.responses.payments.PaymentStatus;
-import com.qbatz.payment.responses.payments.PaymentStatusCardType;
-import com.qbatz.payment.responses.payments.ZohoPaymentResponse;
+import com.qbatz.payment.responses.payments.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +51,7 @@ public class OrderHistoryService {
             return;
         }
 
-        OrderHistory orderHistory = orderHistoryRepository.findByPaymentLinkId(paymentLinks.linkId());
+        OrderHistory orderHistory = orderHistoryRepository.findFirstByPaymentLinkIdAndOrderStatusOrderByCreatedAtDesc(paymentLinks.linkId(), OrderStatus.CREATED.name());
         if (orderHistory == null) {
             return;
         }
@@ -80,6 +77,13 @@ public class OrderHistoryService {
                 orderHistory.setIssuer(cardType.issuer());
                 orderHistory.setChannel("Card");
                 orderHistory.setCardNo(cardType.lastFourDigits());
+            }
+        }
+        else if (paymentLinks.type() != null && paymentLinks.type().equalsIgnoreCase("NET_BANKING")) {
+            PaymentStatusNetBanking netBanking = paymentLinks.netBankingStatus();
+            if (netBanking != null) {
+                orderHistory.setChannel(netBanking.channel());
+                orderHistory.setBankName(netBanking.bankName());
             }
         }
 
@@ -134,6 +138,13 @@ public class OrderHistoryService {
                 orderHistory.setIssuer(cardType.issuer());
                 orderHistory.setChannel("Card");
                 orderHistory.setCardNo(cardType.lastFourDigits());
+            }
+        }
+        else if (paymentLinks.type() != null && paymentLinks.type().equalsIgnoreCase("NET_BANKING")) {
+            PaymentStatusNetBanking netBanking = paymentLinks.netBankingStatus();
+            if (netBanking != null) {
+                orderHistory.setChannel(netBanking.channel());
+                orderHistory.setBankName(netBanking.bankName());
             }
         }
 
