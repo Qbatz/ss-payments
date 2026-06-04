@@ -47,4 +47,5 @@ public class OrderHistory {
     private String createdBy;
     @Column(name = "paid_at")
     private Date paidAt;
+    private String bankName;
 }

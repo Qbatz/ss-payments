@@ -86,7 +86,7 @@ public class PaymentsService {
                                             eventId,
                                             payload.getEventObject().getPayment().getPaymentId(),
                                             status,
-                                            null);
+                                            null, null);
                                     orderHistoryService.successfullMobilePayment(paymentResponse);
                                     publisher.sendUpdate(paymentResponse);
                                 }
@@ -98,7 +98,7 @@ public class PaymentsService {
                                         null,
                                         payload.getEventObject().getPayment().getPaymentId(),
                                         status,
-                                        null);
+                                        null, null);
                                 orderHistoryService.successfullPayment(paymentResponse);
                                 publisher.sendUpdate(paymentResponse);
                             }
@@ -128,7 +128,7 @@ public class PaymentsService {
                                             eventId,
                                             payload.getEventObject().getPayment().getPaymentId(),
                                             null,
-                                            cardStatus);
+                                            cardStatus, null);
                                     orderHistoryService.successfullMobilePayment(paymentResponse);
                                     publisher.sendUpdate(paymentResponse);
                                 }
@@ -139,18 +139,50 @@ public class PaymentsService {
                                         null,
                                         payload.getEventObject().getPayment().getPaymentId(),
                                         null,
-                                        cardStatus);
+                                        cardStatus, null);
+                                orderHistoryService.successfullPayment(paymentResponse);
+                                publisher.sendUpdate(paymentResponse);
+                            }
+                        } else if (type.equalsIgnoreCase("net_banking")) {
+                            ZohoWebhookRequest.NetBanking netBanking = paymentMethod.getNetBanking();
+                            PaymentStatusNetBanking netBankingStatus = new PaymentStatusNetBanking(
+                                    netBanking.getBankName(),
+                                    netBanking.getChannel());
+
+                            if (payload.getEventObject().getPayment().getPaymentLinkId() == null) {
+                                com.qbatz.payment.dao.PaymentSessions paymentSessions = paymentSessionService
+                                        .updatePaymentSession(
+                                                payload.getEventObject().getPayment().getPaymentsSessionId());
+                                if (paymentSessions != null) {
+                                    String eventId = paymentSessions.getHostelId() + "-"
+                                            + payload.getEventObject().getPayment().getPaymentsSessionId();
+
+                                    ZohoPaymentResponse paymentResponse = new ZohoPaymentResponse(type,
+                                            "Success",
+                                            payload.getEventObject().getPayment().getPaymentLinkId(),
+                                            eventId,
+                                            payload.getEventObject().getPayment().getPaymentId(),
+                                            null,
+                                            null, netBankingStatus);
+                                    orderHistoryService.successfullMobilePayment(paymentResponse);
+                                    publisher.sendUpdate(paymentResponse);
+                                }
+                            } else {
+                                ZohoPaymentResponse paymentResponse = new ZohoPaymentResponse(type,
+                                        "Success",
+                                        payload.getEventObject().getPayment().getPaymentLinkId(),
+                                        null,
+                                        payload.getEventObject().getPayment().getPaymentId(),
+                                        null,
+                                        null, netBankingStatus);
                                 orderHistoryService.successfullPayment(paymentResponse);
                                 publisher.sendUpdate(paymentResponse);
                             }
                         }
 
                     }
-                    // PaymentLinks paymentLinks = new
-                    // PaymentLinks(payload.getEventObject().getPayment().getPaymentLinkId(),
-                    // payload.getEventObject().getPayment().getPaymentLinkId());
-
                 }
+
             }
 
         } catch (Exception e) {
