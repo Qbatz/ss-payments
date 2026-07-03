@@ -52,6 +52,7 @@ public class SubscriptionService {
         }
 
         Subscription subscription = new Subscription();
+        subscription.setOrderId(oh.getHistoryId());
         subscription.setSubscriptionNumber("ABCD1234");
         subscription.setHostelId(oh.getHostelId());
         subscription.setPlanCode(oh.getPlanCode());
