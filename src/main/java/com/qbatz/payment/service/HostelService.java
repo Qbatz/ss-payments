@@ -31,6 +31,7 @@ public class HostelService {
                 hostelPlan.setCurrentPlanEndsAt(endDate);
                 hostelPlan.setCurrentPlanPrice(plan.getPrice());
                 hostelPlan.setPaidAmount(paidAmount);
+                hostelPlan.setTrial(false);
 
                 hostelV1.setHostelPlan(hostelPlan);
 
