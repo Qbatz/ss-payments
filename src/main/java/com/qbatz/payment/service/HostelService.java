@@ -26,6 +26,7 @@ public class HostelService {
                     hostelPlan.setCurrentPlanName(plan.getPlanName());
                     hostelPlan.setHostel(hostelV1);
                 }
+                hostelPlan.setCurrentPlanCode(plan.getPlanCode());
                 hostelPlan.setCurrentPlanStartsAt(startDate);
                 hostelPlan.setCurrentPlanEndsAt(endDate);
                 hostelPlan.setCurrentPlanPrice(plan.getPrice());
