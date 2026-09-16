@@ -1,5 +1,6 @@
 package com.qbatz.payment.config;
 
+import com.qbatz.payment.enumm.ServiceEnum;
 import com.qbatz.payment.service.JWTService;
 import com.qbatz.payment.service.MyUserDetailService;
 import io.jsonwebtoken.security.SignatureException;
@@ -19,13 +20,16 @@ import java.io.IOException;
 
 @Configuration
 public class JWTFilter extends OncePerRequestFilter {
-    @Autowired
-    JWTService jwtService;
 
     @Autowired
+    JWTService jwtService;
+    @Autowired
     ApplicationContext context;
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
         try {
             String authHeader = request.getHeader("Authorization");
@@ -34,18 +38,23 @@ public class JWTFilter extends OncePerRequestFilter {
 
             if (authHeader != null && authHeader.startsWith("Bearer")) {
                 token = authHeader.substring(7);
-                userName = jwtService.extractUserName(token);
-
+//                userName = jwtService.extractUserName(token);
+                userName = ServiceEnum.payments.name();
             }
 
             if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails details = context.getBean(MyUserDetailService.class).loadUserByUsername(userName);
 
-                if (jwtService.validateToken(token, details)) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
+                UserDetails details = context.getBean(MyUserDetailService.class)
+                        .loadUserByUsername(userName);
+
+                if (jwtService.validateServiceToken(token, details)) {
+
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(details,
+                                    null, details.getAuthorities());
 
 //                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    authToken.setDetails(jwtService.extractAllClaims(token));
+                    authToken.setDetails(jwtService.extractAllClaims(token, details.getPassword()));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }

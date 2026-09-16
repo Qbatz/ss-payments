@@ -8,13 +8,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PaymentSessionService {
+
     @Autowired
     private PaymentSessionRepositories paymentSessionRepositories;
-
     @Autowired
     private com.qbatz.payment.config.Authentication authentication;
 
-    public PaymentSessions addPaymentSession(String sessionId, Double amount, String hostelId, Double discountAmount, Double planAmount, String planCode) {
+    public PaymentSessions addPaymentSession(String sessionId, Double amount,
+                                             String hostelId, Double discountAmount,
+                                             Double planAmount, String planCode) {
         PaymentSessions paymentSessions = new PaymentSessions();
         paymentSessions.setPaymentSessionId(sessionId);
         paymentSessions.setPaymentAmount(amount);
@@ -29,7 +31,8 @@ public class PaymentSessionService {
     }
 
     public PaymentSessions updatePaymentSession(String paymentsSessionId) {
-        PaymentSessions paymentSessions = paymentSessionRepositories.findByPaymentSessionId(paymentsSessionId);
+        PaymentSessions paymentSessions = paymentSessionRepositories
+                .findByPaymentSessionId(paymentsSessionId);
         paymentSessions.setPaymentStaus(OrderStatus.PAID.name());
 
         return paymentSessionRepositories.save(paymentSessions);

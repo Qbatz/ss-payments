@@ -11,12 +11,15 @@ import java.util.Date;
 
 @Service
 public class HostelService {
+
     @Autowired
     private HostelRepositories hostelRepositories;
 
+    public void activateSubscription(Plans plan, Date startDate, String hostelId,
+                                     Date endDate, Double paidAmount) {
 
-    public void activateSubscription(Plans plan, Date startDate, String hostelId, Date endDate, Double paidAmount) {
         HostelV1 hostelV1 = hostelRepositories.getReferenceById(hostelId);
+
         if (hostelV1 != null) {
             if (hostelV1.getHostelId() != null) {
                 HostelPlan hostelPlan = hostelV1.getHostelPlan();

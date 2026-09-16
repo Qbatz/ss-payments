@@ -11,12 +11,15 @@ import java.util.Date;
 
 @Service
 public class UserActivitiesService {
+
     @Autowired
     private UserActivitiesRepositories userActivitiesRepositories;
     @Autowired
     private Authentication authentication;
 
-    public void addLoginLog(String hostelId, String date, String source, String operation, String sourceId, Users users) {
+    public void addLoginLog(String hostelId, String date, String source,
+                            String operation, String sourceId, Users users) {
+
         Date loggedAt = new Date();
 
         UserActivities userActivities = new UserActivities();
