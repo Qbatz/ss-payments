@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Data
@@ -35,5 +34,4 @@ public class BillingRules {
     @ManyToOne
     @JoinColumn(name = "hostel_id")
     private HostelV1 hostel;
-
 }

@@ -20,38 +20,42 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Autowired
     UserDetailsService userDetailsService;
-
     @Autowired
     JWTFilter jwtFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
+
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/**")
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
 
-
     @Bean
     public AuthenticationProvider authProvider() {
-        DaoAuthenticationProvider daoAuthProvider = new DaoAuthenticationProvider(userDetailsService);
+
+        DaoAuthenticationProvider daoAuthProvider =
+                new DaoAuthenticationProvider(userDetailsService);
+
         daoAuthProvider.setPasswordEncoder(new BCryptPasswordEncoder(10));
 
         return daoAuthProvider;
     }
 
     @Bean
-    public AuthenticationManager getAuthenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager getAuthenticationManager(AuthenticationConfiguration config) {
         return config.getAuthenticationManager();
     }
 }

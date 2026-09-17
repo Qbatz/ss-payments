@@ -14,6 +14,7 @@ import java.util.Date;
 
 @Service
 public class OrderHistoryService {
+
     @Autowired
     private OrderHistoryRepository orderHistoryRepository;
     @Autowired
@@ -46,12 +47,16 @@ public class OrderHistoryService {
     }
 
     public void successfullPayment(Object payload) {
+
         ZohoPaymentResponse paymentLinks = (ZohoPaymentResponse) payload;
+
         if (paymentLinks == null || paymentLinks.linkId() == null) {
             return;
         }
 
-        OrderHistory orderHistory = orderHistoryRepository.findFirstByPaymentLinkIdAndOrderStatusOrderByCreatedAtDesc(paymentLinks.linkId(), OrderStatus.CREATED.name());
+        OrderHistory orderHistory = orderHistoryRepository
+                .findFirstByPaymentLinkIdAndOrderStatusOrderByCreatedAtDesc(
+                        paymentLinks.linkId(), OrderStatus.CREATED.name());
         if (orderHistory == null) {
             return;
         }
@@ -61,14 +66,16 @@ public class OrderHistoryService {
 
         orderHistory.setPaymentId(paymentLinks.paymentId());
         orderHistory.setPaymentType(paymentLinks.type());
-        if (paymentLinks.type() != null && paymentLinks.type().equalsIgnoreCase("UPI")) {
+        if (paymentLinks.type() != null && paymentLinks.type()
+                .equalsIgnoreCase("UPI")) {
             PaymentStatus status = paymentLinks.upiStatus();
             if (status != null) {
                 orderHistory.setChannel(status.channel());
                 orderHistory.setUpiId(status.id());
             }
         }
-        else if (paymentLinks.type() != null && paymentLinks.type().equalsIgnoreCase("CARD")) {
+        else if (paymentLinks.type() != null && paymentLinks.type()
+                .equalsIgnoreCase("CARD")) {
             PaymentStatusCardType cardType = paymentLinks.cardType();
             if (cardType != null) {
                 orderHistory.setCardBrand(cardType.issuer());
@@ -79,7 +86,8 @@ public class OrderHistoryService {
                 orderHistory.setCardNo(cardType.lastFourDigits());
             }
         }
-        else if (paymentLinks.type() != null && paymentLinks.type().equalsIgnoreCase("NET_BANKING")) {
+        else if (paymentLinks.type() != null && paymentLinks.type()
+                .equalsIgnoreCase("NET_BANKING")) {
             PaymentStatusNetBanking netBanking = paymentLinks.netBankingStatus();
             if (netBanking != null) {
                 orderHistory.setChannel(netBanking.channel());
@@ -94,7 +102,9 @@ public class OrderHistoryService {
     }
 
     public void successfullMobilePayment(Object payload) {
+
         ZohoPaymentResponse paymentLinks = (ZohoPaymentResponse) payload;
+
         if (paymentLinks == null || paymentLinks.paymentSessionId() == null) {
             return;
         }
@@ -102,7 +112,8 @@ public class OrderHistoryService {
         String[] hostelIdSessionId = paymentLinks.paymentSessionId().split("-");
         String sessionId = hostelIdSessionId[hostelIdSessionId.length - 1];
 
-        PaymentSessions paymentSessions = paymentSessionService.getPaymentSessionBySessionId(sessionId);
+        PaymentSessions paymentSessions = paymentSessionService
+                .getPaymentSessionBySessionId(sessionId);
         if (paymentSessions == null) {
             return;
         }
@@ -122,14 +133,16 @@ public class OrderHistoryService {
         orderHistory.setPaymentId(paymentLinks.paymentId());
 
         orderHistory.setPaymentType(paymentLinks.type());
-        if (paymentLinks.type() != null && paymentLinks.type().equalsIgnoreCase("UPI")) {
+        if (paymentLinks.type() != null && paymentLinks.type()
+                .equalsIgnoreCase("UPI")) {
             PaymentStatus status = paymentLinks.upiStatus();
             if (status != null) {
                 orderHistory.setChannel(status.channel());
                 orderHistory.setUpiId(status.id());
             }
         }
-        else if (paymentLinks.type() != null && paymentLinks.type().equalsIgnoreCase("CARD")) {
+        else if (paymentLinks.type() != null && paymentLinks.type()
+                .equalsIgnoreCase("CARD")) {
             PaymentStatusCardType cardType = paymentLinks.cardType();
             if (cardType != null) {
                 orderHistory.setCardBrand(cardType.issuer());
@@ -140,7 +153,8 @@ public class OrderHistoryService {
                 orderHistory.setCardNo(cardType.lastFourDigits());
             }
         }
-        else if (paymentLinks.type() != null && paymentLinks.type().equalsIgnoreCase("NET_BANKING")) {
+        else if (paymentLinks.type() != null && paymentLinks.type()
+                .equalsIgnoreCase("NET_BANKING")) {
             PaymentStatusNetBanking netBanking = paymentLinks.netBankingStatus();
             if (netBanking != null) {
                 orderHistory.setChannel(netBanking.channel());

@@ -14,6 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class Users {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String userId;
@@ -35,7 +36,6 @@ public class Users {
     private Date createdAt;
     private Date lastUpdate;
     private String description;
-
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Address address;
