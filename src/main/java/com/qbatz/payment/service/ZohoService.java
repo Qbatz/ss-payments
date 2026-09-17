@@ -79,7 +79,9 @@ public class ZohoService {
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-            ResponseEntity<JsonNode> responseEntity = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, entity, JsonNode.class);
+            ResponseEntity<JsonNode> responseEntity = restTemplate
+                    .exchange(builder.toUriString(), HttpMethod.POST, entity, JsonNode.class);
+
             if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
                 JsonNode paymentLinksNode = responseEntity.getBody().get("payment_links");
                 PaymentLinks details = new PaymentLinks(
@@ -242,7 +244,8 @@ public class ZohoService {
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
 
-            ResponseEntity<String> responseEntity = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
+            ResponseEntity<String> responseEntity = restTemplate
+                    .exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
 
             System.out.println(responseEntity.getStatusCode());
             if (responseEntity.getStatusCode() == HttpStatus.OK) {
