@@ -32,6 +32,12 @@ public class JWTFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         try {
+
+//            if (request.getServletPath().equals("/v2/payments/hook")) {
+//                filterChain.doFilter(request, response);
+//                return;
+//            }
+
             String authHeader = request.getHeader("Authorization");
             String token = null;
             String userName = null;
