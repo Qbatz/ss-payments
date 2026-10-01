@@ -10,11 +10,13 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class UserPrinciple implements UserDetails {
+
     private Users users;
 
     public UserPrinciple(Users users) {
         this.users = users;
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority(String.valueOf(users.getRoleId())));

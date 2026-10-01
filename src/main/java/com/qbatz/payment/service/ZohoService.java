@@ -19,9 +19,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import tools.jackson.databind.JsonNode;
 
-import com.qbatz.payment.enumm.ActivitySource;
-import com.qbatz.payment.enumm.ActivitySourceType;
-import com.qbatz.payment.dao.Users;
 import com.qbatz.payment.repositories.UserRepository;
 import com.qbatz.payment.config.Authentication;
 import java.util.Collections;
@@ -33,23 +30,19 @@ public class ZohoService {
 
     @Value("${ZOHO_PAYMENTS_BASE_URL}")
     private String ZOHO_PAYMENTS_BASE_URL;
+
     private final RestTemplate restTemplate;
 
     @Autowired
     private CredentialService credentialService;
-
     @Autowired
     private OrderHistoryService orderHistoryService;
-
     @Autowired
     private PaymentSessionService paymentSessionService;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private UsersService usersService;
-
     @Autowired
     private Authentication authentication;
 
@@ -60,8 +53,9 @@ public class ZohoService {
         this.restTemplate = template;
     }
 
+    public PaymentLinks generatePaymentLink(String hostelId, GeneratePayments generatePayments,
+                                            int count) {
 
-    public PaymentLinks generatePaymentLink(String hostelId, GeneratePayments generatePayments, int count) {
         Credentials credentials = credentialService.getZohoCredentials();
         try {
 
@@ -85,7 +79,9 @@ public class ZohoService {
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-            ResponseEntity<JsonNode> responseEntity = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, entity, JsonNode.class);
+            ResponseEntity<JsonNode> responseEntity = restTemplate
+                    .exchange(builder.toUriString(), HttpMethod.POST, entity, JsonNode.class);
+
             if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
                 JsonNode paymentLinksNode = responseEntity.getBody().get("payment_links");
                 PaymentLinks details = new PaymentLinks(
@@ -132,7 +128,6 @@ public class ZohoService {
         }
 
         return null;
-
     }
 
 //    public String generate() {
@@ -147,9 +142,8 @@ public class ZohoService {
 //        formParams.add("grant_type", "authorization_code");
 //    }
 
-
-
     public Credentials refreshAuthToken(Credentials credentials) {
+
         String url = "https://accounts.zoho.in/oauth/v2/token";
 
         MultiValueMap<String, String> formParams = new LinkedMultiValueMap<>();
@@ -181,7 +175,9 @@ public class ZohoService {
         }
     }
 
-    public com.qbatz.payment.responses.payments.PaymentSessions generatePaymentSessions(String hostelId, GeneratePayments generatePayments, int count) {
+    public com.qbatz.payment.responses.payments.PaymentSessions generatePaymentSessions(
+            String hostelId, GeneratePayments generatePayments, int count) {
+
         Credentials credentials = credentialService.getZohoCredentials();
         try {
             String accountId = "60035196766";
@@ -225,13 +221,11 @@ public class ZohoService {
             }
 
             return null;
-
         }
-
-
     }
 
     public ResponseEntity<?> getPaymentStatusFromZoho(String paymentId, int count) {
+
         Credentials credentials = credentialService.getZohoCredentials();
 
         try {
@@ -250,14 +244,14 @@ public class ZohoService {
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
 
-            ResponseEntity<String> responseEntity = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
+            ResponseEntity<String> responseEntity = restTemplate
+                    .exchange(builder.toUriString(), HttpMethod.GET, entity, String.class);
 
             System.out.println(responseEntity.getStatusCode());
             if (responseEntity.getStatusCode() == HttpStatus.OK) {
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
         }
         catch (HttpClientErrorException.Unauthorized ex) {
             count = count + 1;

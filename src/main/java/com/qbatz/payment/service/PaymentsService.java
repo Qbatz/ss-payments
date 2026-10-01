@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
@@ -30,13 +29,17 @@ public class PaymentsService {
         this.publisher = publisher;
     }
 
-    public ResponseEntity<?> generatePaymentsLink(String hostelId, GeneratePayments generatePayments) {
-        PaymentLinks paymentLink = zohoService.generatePaymentLink(hostelId, generatePayments, 1);
+    public ResponseEntity<?> generatePaymentsLink(String hostelId,
+                                                  GeneratePayments generatePayments) {
+
+        PaymentLinks paymentLink = zohoService
+                .generatePaymentLink(hostelId, generatePayments, 1);
 
         return new ResponseEntity<>(paymentLink, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getPaymentStatus(ZohoWebhookRequest payload, Map<String, String> headers) {
+    public ResponseEntity<?> getPaymentStatus(ZohoWebhookRequest payload,
+                                              Map<String, String> headers) {
 
         // zohoPaymentsService.inserIntoDb(" ", "hmacKey", payload.getEventType(),
         // headers.toString());
@@ -184,15 +187,17 @@ public class PaymentsService {
                 }
 
             }
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<?> generatePaymentSession(String hostelId, GeneratePayments generatePayments) {
-        PaymentSessions paymentSessions = zohoService.generatePaymentSessions(hostelId, generatePayments, 1);
+    public ResponseEntity<?> generatePaymentSession(String hostelId,
+                                                    GeneratePayments generatePayments) {
+
+        PaymentSessions paymentSessions = zohoService
+                .generatePaymentSessions(hostelId, generatePayments, 1);
 
         return new ResponseEntity<>(paymentSessions, HttpStatus.OK);
     }

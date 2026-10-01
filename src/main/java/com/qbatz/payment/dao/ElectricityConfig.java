@@ -27,7 +27,6 @@ public class ElectricityConfig {
     private boolean isUpdated;
     private Integer billDate;
 
-
     @OneToOne()
     @JoinColumn(name = "hostel_id", referencedColumnName = "hostelId")
     private HostelV1 hostel;

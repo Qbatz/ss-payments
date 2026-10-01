@@ -23,13 +23,15 @@ public class SubscriptionService {
     private PlansRepository plansRepository;
 
     public void subscribe(OrderHistory oh) {
+
         Plans plan = plansRepository.findPlanByPlanCode(oh.getPlanCode());
         if (plan == null) {
             System.out.println("Plan not found for code: " + oh.getPlanCode());
             return;
         }
 
-        Subscription runningSubscription = subscriptionRepository.findLatestSubscription(oh.getHostelId());
+        Subscription runningSubscription = subscriptionRepository
+                .findLatestSubscription(oh.getHostelId());
         Date startDate;
         boolean shouldActivateImmediately = false;
 
@@ -72,8 +74,8 @@ public class SubscriptionService {
 
         Subscription sub = subscriptionRepository.save(subscription);
         if (shouldActivateImmediately) {
-            hostelService.activateSubscription(plan, startDate, oh.getHostelId(), endDate, oh.getTotalAmount());
+            hostelService.activateSubscription(plan, startDate, oh.getHostelId(),
+                    endDate, oh.getTotalAmount());
         }
-
     }
 }

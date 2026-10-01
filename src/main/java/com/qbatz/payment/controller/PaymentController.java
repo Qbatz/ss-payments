@@ -3,6 +3,9 @@ package com.qbatz.payment.controller;
 import com.qbatz.payment.payloads.Hooks.ZohoWebhookRequest;
 import com.qbatz.payment.payloads.Payments.GeneratePayments;
 import com.qbatz.payment.service.PaymentsService;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,18 +15,22 @@ import java.util.Map;
 @RestController
 @RequestMapping("/v2/payments")
 @CrossOrigin("*")
+@SecurityScheme(name = "Authorization", type = SecuritySchemeType.HTTP, bearerFormat = "JWT", scheme = "bearer")
+@SecurityRequirement(name = "Authorization")
 public class PaymentController {
 
     @Autowired
     private PaymentsService paymentsService;
 
     @PostMapping("/generate/{hostelId}")
-    public ResponseEntity<?> generatePaymentLink(@PathVariable("hostelId") String hostelId, @RequestBody GeneratePayments generatePayments) {
+    public ResponseEntity<?> generatePaymentLink(@PathVariable("hostelId") String hostelId,
+                                                 @RequestBody GeneratePayments generatePayments) {
         return paymentsService.generatePaymentsLink(hostelId, generatePayments);
     }
 
     @PostMapping("/session/{hostelId}")
-    public ResponseEntity<?> createPymentSession(@PathVariable("hostelId") String hostelId, @RequestBody GeneratePayments generatePayments) {
+    public ResponseEntity<?> createPymentSession(@PathVariable("hostelId") String hostelId,
+                                                 @RequestBody GeneratePayments generatePayments) {
         return paymentsService.generatePaymentSession(hostelId, generatePayments);
     }
 
@@ -37,5 +44,4 @@ public class PaymentController {
     public ResponseEntity<?> getPaymentStatusByPaymentId(@PathVariable("paymentId") String paymentId) {
         return paymentsService.getPaymentStatusFromZoho(paymentId);
     }
-
 }

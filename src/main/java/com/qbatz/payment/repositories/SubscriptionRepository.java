@@ -8,6 +8,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
-    @Query(value = "SELECT * FROM subscription WHERE hostel_id=:hostelId order by plan_starts_at DESC LIMIT 1", nativeQuery = true)
+
+    @Query(value = """
+                    SELECT * FROM subscription
+                    WHERE hostel_id=:hostelId
+                    order by plan_starts_at DESC
+                    LIMIT 1
+                    """,
+            nativeQuery = true)
     Subscription findLatestSubscription(@Param("hostelId") String hostelId);
 }

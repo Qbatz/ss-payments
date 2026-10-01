@@ -9,7 +9,9 @@ import java.util.List;
 
 @Repository
 public interface OrderHistoryRepository extends JpaRepository<OrderHistory, Long> {
-    OrderHistory findFirstByPaymentLinkIdAndOrderStatusOrderByCreatedAtDesc(String paymentLinkId, String orderStatus);
+
+    OrderHistory findFirstByPaymentLinkIdAndOrderStatusOrderByCreatedAtDesc(String paymentLinkId,
+                                                                            String orderStatus);
 
     @Query("""
             SELECT oh FROM OrderHistory oh WHERE oh.userType = 'OWNER'
