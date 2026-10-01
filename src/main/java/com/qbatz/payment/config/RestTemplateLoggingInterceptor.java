@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 public class RestTemplateLoggingInterceptor implements ClientHttpRequestInterceptor {
+
     private static final Logger logger = LoggerFactory.getLogger(RestTemplateLoggingInterceptor.class);
 
     private void logRequest(HttpRequest request, byte[] body) throws IOException {
@@ -37,8 +38,10 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
         }
         logger.info("Body         : {}", body);
     }
+
     @Override
-    public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
+    public ClientHttpResponse intercept(HttpRequest request, byte[] body,
+                                        ClientHttpRequestExecution execution) throws IOException {
         logRequest(request, body);
         ClientHttpResponse response = execution.execute(request, body);
         logResponse(response);

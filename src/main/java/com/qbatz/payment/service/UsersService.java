@@ -14,6 +14,8 @@ public class UsersService {
 
     public void addUserLog(String hostelId, String sourceId, ActivitySource activitySource,
                            ActivitySourceType activitySourceType, Users users) {
-        userActivitiesService.addLoginLog(hostelId, null, activitySource.name(), activitySourceType.name(), sourceId, users);
+
+        userActivitiesService.addLoginLog(hostelId, null, activitySource.name(),
+                activitySourceType.name(), sourceId, users);
     }
 }

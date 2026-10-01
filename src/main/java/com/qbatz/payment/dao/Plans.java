@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -23,6 +25,7 @@ public class Plans {
     //basic or premium or affordable
     private String planType;
     private String planCode;
+    private int kycPerMonthLimit;
     private boolean shouldShow;
     private boolean canCustomize;
     private boolean isActive;
@@ -40,4 +43,8 @@ public class Plans {
     private Double finalPrice;
     private Date createdAt;
     private Date updatedAt;
+
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @SQLRestriction("is_active = true")
+    private List<PlanFeatures> featuresList;
 }

@@ -7,7 +7,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 
 public class StringListConverter implements AttributeConverter<List<String>, String> {
+
     private static final ObjectMapper mapper = new ObjectMapper();
+
     @Override
     public String convertToDatabaseColumn(List<String> attribute) {
         try {

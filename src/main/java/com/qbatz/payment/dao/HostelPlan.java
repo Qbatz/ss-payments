@@ -28,5 +28,4 @@ public class HostelPlan {
     @OneToOne
     @JoinColumn(name = "hostel_id", referencedColumnName = "hostelId")
     private HostelV1 hostel;
-
 }
