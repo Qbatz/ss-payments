@@ -66,12 +66,12 @@ public class HostelService {
             kycConfig = new KycConfig();
 
             kycConfig.setHostelId(hostelId);
-            kycConfig.setCanRequest(true);
             kycConfig.setCreatedAt(today);
         } else {
             kycConfig.setUpdatedAt(today);
         }
 
+        kycConfig.setCanRequest(true);
         kycConfig.setLimitPerMonth(kycPerMonthLimit);
 
         hostelRepositories.save(hostel);
