@@ -26,7 +26,11 @@ public class HostelService {
     public void activateSubscription(Plans plan, Date startDate, String hostelId,
                                      Date endDate, Double paidAmount) {
 
-        HostelV1 hostelV1 = hostelRepositories.getReferenceById(hostelId);
+        if (plan == null){
+            return;
+        }
+
+        HostelV1 hostel = hostelRepositories.getReferenceById(hostelId);
 
         List<Plans> freePlans = plansService.getFreePlans();
         Set<String> freePlanCodes = freePlans.stream()
@@ -37,47 +41,40 @@ public class HostelService {
 
         Date today = new Date();
 
-        if (hostelV1 != null) {
-            if (hostelV1.getHostelId() != null) {
-                HostelPlan hostelPlan = hostelV1.getHostelPlan();
+        HostelPlan hostelPlan = hostel.getHostelPlan();
 
-                boolean isTrial = freePlanCodes.contains(plan.getPlanCode());
+        boolean isTrial = freePlanCodes.contains(plan.getPlanCode());
 
-                if (hostelPlan == null) {
-                    hostelPlan = new HostelPlan();
-                    hostelPlan.setHostel(hostelV1);
-                }
-                hostelPlan.setCurrentPlanCode(plan.getPlanCode());
-                hostelPlan.setCurrentPlanName(plan.getPlanName());
-                hostelPlan.setCurrentPlanStartsAt(startDate);
-                hostelPlan.setCurrentPlanEndsAt(endDate);
-                hostelPlan.setCurrentPlanPrice(plan.getFinalPrice());
-                hostelPlan.setPaidAmount(paidAmount);
-                hostelPlan.setTrial(isTrial);
-                hostelPlan.setTrialEndingAt(isTrial ? endDate : null);
-
-                hostelV1.setHostelPlan(hostelPlan);
-
-                int kycPerMonthLimit = -1;
-                if (plan != null){
-                    kycPerMonthLimit = plan.getKycPerMonthLimit();
-                }
-
-                if (kycConfig == null){
-                    kycConfig = new KycConfig();
-
-                    kycConfig.setHostelId(hostelId);
-                    kycConfig.setCanRequest(true);
-                    kycConfig.setCreatedAt(today);
-                } else {
-                    kycConfig.setUpdatedAt(today);
-                }
-
-                kycConfig.setLimitPerMonth(kycPerMonthLimit);
-
-                hostelRepositories.save(hostelV1);
-                kycConfigService.save(kycConfig);
-            }
+        if (hostelPlan == null) {
+            hostelPlan = new HostelPlan();
+            hostelPlan.setHostel(hostel);
         }
+        hostelPlan.setCurrentPlanCode(plan.getPlanCode());
+        hostelPlan.setCurrentPlanName(plan.getPlanName());
+        hostelPlan.setCurrentPlanStartsAt(startDate);
+        hostelPlan.setCurrentPlanEndsAt(endDate);
+        hostelPlan.setCurrentPlanPrice(plan.getFinalPrice());
+        hostelPlan.setPaidAmount(paidAmount);
+        hostelPlan.setTrial(isTrial);
+        hostelPlan.setTrialEndingAt(isTrial ? endDate : null);
+
+        hostel.setHostelPlan(hostelPlan);
+
+        int kycPerMonthLimit = plan.getKycPerMonthLimit();
+
+        if (kycConfig == null) {
+            kycConfig = new KycConfig();
+
+            kycConfig.setHostelId(hostelId);
+            kycConfig.setCreatedAt(today);
+        } else {
+            kycConfig.setUpdatedAt(today);
+        }
+
+        kycConfig.setCanRequest(true);
+        kycConfig.setLimitPerMonth(kycPerMonthLimit);
+
+        hostelRepositories.save(hostel);
+        kycConfigService.save(kycConfig);
     }
 }
