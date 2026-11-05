@@ -1,9 +1,6 @@
 package com.qbatz.payment.service;
 
-import com.qbatz.payment.dao.HostelPlan;
-import com.qbatz.payment.dao.HostelV1;
-import com.qbatz.payment.dao.KycConfig;
-import com.qbatz.payment.dao.Plans;
+import com.qbatz.payment.dao.*;
 import com.qbatz.payment.repositories.HostelRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +19,8 @@ public class HostelService {
     private PlansService plansService;
     @Autowired
     private KycConfigService kycConfigService;
+    @Autowired
+    private KycHistoryService kycHistoryService;
 
     public void activateSubscription(Plans plan, Date startDate, String hostelId,
                                      Date endDate, Double paidAmount) {
@@ -38,6 +37,8 @@ public class HostelService {
                 .collect(Collectors.toSet());
 
         KycConfig kycConfig = kycConfigService.getByHostelId(hostelId);
+
+        KycHistory latestKycHistory = kycHistoryService.getLatestByHostelId(hostelId);
 
         Date today = new Date();
 
@@ -73,6 +74,23 @@ public class HostelService {
 
         kycConfig.setCanRequest(true);
         kycConfig.setLimitPerMonth(kycPerMonthLimit);
+
+        if (latestKycHistory == null || latestKycHistory.getEndDate() != null) {
+
+            KycHistory newKycHistory = new KycHistory();
+
+            newKycHistory.setHostelId(hostelId);
+            newKycHistory.setStartDate(startDate);
+            newKycHistory.setEndDate(null);
+            newKycHistory.setIsCancelledDueToPlan(false);
+            newKycHistory.setCancellationReason(null);
+            newKycHistory.setActivationReason("Activation due to plan");
+            newKycHistory.setCancelledBy(null);
+            newKycHistory.setCreatedBy(null);
+            newKycHistory.setCreatedAt(today);
+
+            kycHistoryService.save(newKycHistory);
+        }
 
         hostelRepositories.save(hostel);
         kycConfigService.save(kycConfig);
